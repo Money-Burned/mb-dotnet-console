@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "name": "C#: mb-dotnet-console",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}\\mb-dotnet-console.csproj",
+            "launchConfigurationId": "TargetFramework=;mb-dotnet-console"
+        }
+    ]
+}
