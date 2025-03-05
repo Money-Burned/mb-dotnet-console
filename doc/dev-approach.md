@@ -1,3 +1,3 @@
-# Development Approach of [your-repo-name]
+# Development approach of mb-dotnet-console
 
 tbd  
