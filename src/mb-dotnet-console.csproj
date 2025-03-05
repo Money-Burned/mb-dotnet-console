@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\mb-dotnet-lib\mb-dotnet-lib.csproj" />
+    <ProjectReference Include="..\..\mb-dotnet-lib\mb-dotnet-lib.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
