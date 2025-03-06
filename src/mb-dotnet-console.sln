@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyBurned.Cli", "mb-dotnet-console.csproj", "{FA0649B3-0D6D-43C4-9F96-6F523F80DF47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mb-dotnet-lib", "..\..\mb-dotnet-lib\mb-dotnet-lib.csproj", "{D40206D0-5A84-478B-9D6E-0AE2EE2E4937}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mb-dotnet-lib", "..\..\mb-dotnet-lib\src\mb-dotnet-lib.csproj", "{D40206D0-5A84-478B-9D6E-0AE2EE2E4937}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
