@@ -1,4 +1,4 @@
-MIT License
+# MIT License
 
 Copyright (c) 2025 [Money Burned](https://github.com/Money-Burned), Thomas Roschinsky (t.roschinsky[at]gmx.de)
 
