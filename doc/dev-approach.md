@@ -1,3 +1,3 @@
 # Development approach of mb-dotnet-console
 
-tbd  
+Sorry folks, I'm not done yet - please stay tuned to catch up with the whole journey... `¯\_(ツ)_/¯`  
