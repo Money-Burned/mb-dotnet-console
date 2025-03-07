@@ -2,13 +2,13 @@
 
 This repository is one of several reference implementations of the "Money Burned" application to illustrate the use of a specific development technology/platform. To learn more about it, check out the [organization profile](https://github.com/Money-Burned).  
 
-This .NET based console application is intended to be cross-platform designed and shows how to implement the requirements with a very basic user interface at command prompt level.  
+This [.NET](https://dotnet.microsoft.com/en-us/learn/dotnet/what-is-dotnet) based console application is intended to be cross-platform designed and shows how to implement the requirements with a very basic user interface at command prompt level.  
 
 ## Quick facts
 
 - Application type: **Desktop**
 - Available for: **Cross-Platform** (Windows/Linux/Mac)
-- Framework/Technology used: **.NET 9.0** (pronounced "Dotnet")
+- Framework/Technology used: **[.NET 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)** (pronounced "Dotnet")
 - Programming Language used: **C#**
 - User interaction: **CLI** 
 
