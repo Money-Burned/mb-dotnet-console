@@ -4,6 +4,8 @@ This repository is one of several reference implementations of the "Money Burned
 
 This [.NET](https://dotnet.microsoft.com/en-us/learn/dotnet/what-is-dotnet) based console application is intended to be cross-platform designed and shows how to implement the requirements with a very basic user interface at command prompt level.  
 
+:::image type="content" source="./res/mb-dotnet-console_nice.jpg" alt-text="A window showing the PowerShell CLI with the output of an execution of the console app, calculated for three resources a cost of €7.80":::
+
 ## Quick facts
 
 - Application type: **Desktop**
