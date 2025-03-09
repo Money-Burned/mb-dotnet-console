@@ -76,6 +76,8 @@ However, this display mode is not used by default, so it is compatible with seve
 
 ### Use pre-defined ressources
 
+By using the  `-r` or `--resources` parameter followed by a `<resource string>`, an enumeration of resources, you can add a set of resources when starting the application. A `<resource string>` consists of one or more string-based resource definitions separated by a semicolon or a plus sign. Specify at least the cost value for a single resource. If you want to assign a name to a resource, place it before the cost, separated by a colon.  
+
 To deviate from the standard time scope (hours) for a cost, use a slash, the word `per` or the letter `à` after the value. Then use the codes for the respective interval type.  
         
 Standard Cost Types:  
