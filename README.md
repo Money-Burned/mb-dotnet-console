@@ -2,7 +2,7 @@
 
 This repository is one of several reference implementations of the "Money Burned" application to illustrate the use of a specific development technology/platform. To learn more about it, check out the [organization profile](https://github.com/Money-Burned).  
 
-This [.NET](https://dotnet.microsoft.com/en-us/learn/dotnet/what-is-dotnet) based console application is intended to be cross-platform designed and shows how to implement the requirements with a very basic user interface at command prompt level.  
+This [.NET](https://dotnet.microsoft.com/en-us/learn/dotnet/what-is-dotnet) (pronounced "Dotnet") based console application is intended to be cross-platform designed and shows how to implement the requirements with a very basic user interface at command prompt level.  
 
 ![A window showing the PowerShell CLI with the output of an execution of the console app, calculated for three resources a cost of €7.80](./res/mb-dotnet-console_nice.jpg)  
 
@@ -10,7 +10,7 @@ This [.NET](https://dotnet.microsoft.com/en-us/learn/dotnet/what-is-dotnet) base
 
 - Application type: **Desktop**
 - Available for: **Cross-Platform** (Windows/Linux/Mac)
-- Framework/Technology used: **[.NET 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)** (pronounced "Dotnet")
+- Framework/Technology used: **[.NET 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)**
 - Programming Language used: **C#**
 - User interaction: **CLI** 
 
@@ -26,7 +26,7 @@ This [.NET](https://dotnet.microsoft.com/en-us/learn/dotnet/what-is-dotnet) base
     - Clone the dependency project [repository "mb-dotnet-lib"](https://github.com/Money-Burned/mb-dotnet-lib)
     - Clone this [repository](https://github.com/Money-Burned/mb-dotnet-console)
 
-If you are working on Windows, you can use the following PowerShell commands to get started:  
+If you are working under Windows, you can perform all of the above steps with the following [PowerShell](https://learn.microsoft.com/de-de/powershell/scripting/what-is-a-command-shell?view=powershell-7.5) commands to get started:  
 
 ```powershell
 winget install Git.Git -e
@@ -37,7 +37,9 @@ git clone https://github.com/Money-Burned/mb-dotnet-console.git
 git clone https://github.com/Money-Burned/mb-dotnet-lib.git
 ```
 
-### How to run
+_**HINT:** If you are confronted with an error message stating that `git` is not a recognized command, Git may never have been installed on your computer. You will then need to restart your terminal/console/shell and run the last three lines again._  
+
+### How to run the program
 
 Once you have met all the requirements, you are good to go:  
 
@@ -61,7 +63,7 @@ To run the application please use `dotnet run [-- options]` or, if using the exe
     - You are allowed to use common interval types to specify costs  scoped not only to hourly bases (e. g. MD = man days, d = days)
 - `-c`; `--cost-types`                 
     - Lists all available cost interval types
-- `n`; `--nice` 
+- `-n`; `--nice` 
     - Enables a more interactive and nice looking user experience
 - `-?`; `-h`; `--help` 
     - Show help and usage information
