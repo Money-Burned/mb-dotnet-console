@@ -2,7 +2,7 @@
 
 This repository is one of several reference implementations of the "Money Burned" application to illustrate the use of a specific development technology/platform. To learn more about it, check out the [organization profile](https://github.com/Money-Burned).  
 
-This [.NET](https://dotnet.microsoft.com/en-us/learn/dotnet/what-is-dotnet) (pronounced "Dotnet") based console application is intended to be cross-platform designed and shows how to implement the requirements with a very basic user interface at command prompt level.  
+This [.NET](https://dotnet.microsoft.com/en-us/learn/dotnet/what-is-dotnet) (pronounced "Dotnet") based console application is intended to be cross-platform designed and shows how to implement the [requirements](https://github.com/Money-Burned/.github/blob/main/doc/requirements.md) with a very basic user interface at command prompt level.  
 
 ![A window showing the PowerShell CLI with the output of an execution of the console app, calculated for three resources a cost of €7.80](./res/mb-dotnet-console_nice.jpg)  
 
@@ -14,7 +14,7 @@ This [.NET](https://dotnet.microsoft.com/en-us/learn/dotnet/what-is-dotnet) (pro
 - Programming Language used: **C#**
 - User interaction: **CLI** 
 
-> Degree of difficulty: **moderate**
+> Degree of difficulty: **moderate ✌**
 
 ## Getting started
 
@@ -33,8 +33,9 @@ winget install Git.Git -e
 winget install Microsoft.DotNet.SDK.9 -e
 md ~\Money-Burned
 cd ~\Money-Burned
-git clone https://github.com/Money-Burned/mb-dotnet-console.git
 git clone https://github.com/Money-Burned/mb-dotnet-lib.git
+git clone https://github.com/Money-Burned/mb-dotnet-console.git
+ls
 ```
 
 _**HINT:** If you are confronted with an error message stating that `git` is not a recognized command, Git may never have been installed on your computer. You will then need to restart your terminal/console/shell and run the last three lines again._  
