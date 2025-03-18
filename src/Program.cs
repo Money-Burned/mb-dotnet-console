@@ -13,7 +13,7 @@ internal class Program
     private static bool nicePrint = false;
     private static int redraws = 0;
     private static readonly List<Resource> resources = [];
-    private static RecordingJob? job;
+    private static Job? job;
 
     /// <summary>
     /// Main method that processes the arguments and executes the most important application methods in the correct order
@@ -110,7 +110,7 @@ internal class Program
         var posTop = Console.CursorTop;
         var posLeft = Console.CursorLeft;
 
-        job = new RecordingJob([.. resources]);
+        job = new Job([.. resources]);
         Console.Write("Press Return to start or Ctrl+C to abort...");
         Console.Read();
 
