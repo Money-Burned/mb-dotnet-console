@@ -107,6 +107,14 @@ internal class Program
             return;
         }
 
+        Console.CancelKeyPress += (sender, e) =>
+        {
+            e.Cancel = true;
+            Console.WriteLine($"CancelKeyPress event triggered by user '{e.SpecialKey}'. Exiting...");
+            Environment.Exit(0);
+            return;
+        };
+
         var posTop = Console.CursorTop;
         var posLeft = Console.CursorLeft;
 
