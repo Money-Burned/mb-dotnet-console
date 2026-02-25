@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Security.Cryptography.X509Certificates;
 using MoneyBurned.Dotnet.Lib;
 using MoneyBurned.Dotnet.Lib.Data;
 
@@ -11,6 +12,7 @@ internal class Program
 {
     private static bool resComplete = false;
     private static bool nicePrint = false;
+    private static bool directRun = false;
     private static int redraws = 0;
     private static readonly List<Resource> resources = [];
     private static Job? job;
@@ -37,7 +39,10 @@ internal class Program
                         case "--nice":
                             nicePrint = true;
                             break;
-                        
+                        case "-d":
+                        case "--direct-run":
+                            directRun = true;
+                            break;
                         case "-c":
                         case "--cost-types":
                             PrintCostTypes();
@@ -51,7 +56,10 @@ internal class Program
                 }
             }
 
-            DrawScreen();
+            if (!directRun)
+            {
+                DrawScreen();
+            }
             RunJob();
         }
         catch (IndexOutOfRangeException)
@@ -110,7 +118,10 @@ internal class Program
         Console.CancelKeyPress += (sender, e) =>
         {
             e.Cancel = true;
-            Console.WriteLine($"CancelKeyPress event triggered by user '{e.SpecialKey}'. Exiting...");
+            job!.EndRecording();
+            Console.WriteLine();
+            Console.WriteLine($"Job aborted by '{e.SpecialKey}'...");
+            Console.WriteLine(job);
             Environment.Exit(0);
             return;
         };
@@ -119,17 +130,25 @@ internal class Program
         var posLeft = Console.CursorLeft;
 
         job = new Job([.. resources]);
-        Console.Write("Press Return to start or Ctrl+C to abort...");
-        Console.Read();
+        if (!directRun)
+        {
+            Console.Write("Press Return to start or Ctrl+C to abort...");
+            Console.Read();
+        }
 
         job.StartRecording();
         if (nicePrint) { Console.SetCursorPosition(posLeft, posTop); }
-        Console.Write("Recording - press Return to stop recording...    ");
+        Console.Write("Recording - press Return or Ctrl+C to stop recording...    ");
         int i = 1;
         int lastKey = 0;
         do
         {
-            if (nicePrint)
+            if (directRun)
+            {
+                CenterText($"{job.ElapsedCost:C2}");
+                Thread.Sleep(1000);
+            }
+            else if (nicePrint)
             {
                 Console.SetCursorPosition(posLeft, posTop + 1);
                 if (i % 2 == 0) { Console.Write("  [/] {0:C2}", job.ElapsedCost); }
@@ -221,6 +240,57 @@ internal class Program
     }
 
     /// <summary>
+    /// Prints full screen centered text to console
+    /// </summary>
+    /// <param name="centerText">Text to display; can be multiple lines</param>
+    /// <param name="leftOffset">Left offset</param>
+    /// <param name="topOffset">Top offset</param>
+    private static void CenterText(string centerText, int leftOffset = 0, int topOffset = 0)
+    {
+        if (string.IsNullOrEmpty(centerText))
+        {
+            return;
+        }
+
+        int middleWidth;
+        int middleHeight;
+
+        try
+        {
+            centerText = centerText.ReplaceLineEndings();
+            string[] lines = centerText.Split([Environment.NewLine], StringSplitOptions.None);
+            int horizontalMiddle = 0;
+            foreach (string line in lines)
+            {
+                horizontalMiddle = line.Length > horizontalMiddle ? Convert.ToInt32(line.Length / 2) : horizontalMiddle;
+            }
+
+            middleWidth = Convert.ToInt32(Console.WindowWidth / 2) - horizontalMiddle + leftOffset;
+            middleHeight = Convert.ToInt32(Console.WindowHeight / 2) + topOffset - Convert.ToInt32(lines.Length / 2);
+            Console.Clear();
+            for (int i = 0; i < lines.Length; i++)
+            {
+                Console.SetCursorPosition(middleWidth, middleHeight);
+                Console.Write(lines[i]);
+                middleHeight++;
+            }
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            middleWidth = Convert.ToInt32(Console.WindowWidth / 2) - 13;
+            middleHeight = Convert.ToInt32(Console.WindowHeight / 2) - 1;
+            Console.SetCursorPosition(middleWidth, middleHeight);
+            Console.Write("# !Output Area to small! #");
+            Console.SetCursorPosition(middleWidth, middleHeight + 1);
+            Console.Write("# Please enlarge console #");
+        }
+        catch (Exception ex)
+        {
+            Console.Write($"Writing output failed with {ex.GetType().Name}: {ex.Message}");
+        }
+    }
+
+    /// <summary>
     /// Prints the applications logo
     /// </summary>
     private static void PrintLogo()
@@ -259,6 +329,7 @@ Options:
                                    You are allowed to use common interval types to specify costs  
                                    scoped not only to hourly bases (e. g. MD = man days, d = days).
   -c, --cost-types                 Lists all available cost interval types.
+  -d, --direct-run                 Starts the job immediately when resources are available.
   -n, --nice                       Enables a more interactive and nice looking user experience.
   -?, -h, --help                   Show help and usage information.
 ";
