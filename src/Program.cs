@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Security.Cryptography.X509Certificates;
 using MoneyBurned.Dotnet.Lib;
 using MoneyBurned.Dotnet.Lib.Data;
 
@@ -40,7 +39,7 @@ internal class Program
                             nicePrint = true;
                             break;
                         case "-d":
-                        case "--direct-run":
+                        case "--disable-direct-run":
                             directRun = true;
                             break;
                         case "-c":
@@ -54,6 +53,9 @@ internal class Program
                             break;
                     }
                 }
+
+                // if resources are added already, switch to direct mode, except 'disable-direct-run' was selected
+                if (resources.Count > 0) { directRun = !directRun; }
             }
 
             if (!directRun)
@@ -120,9 +122,6 @@ internal class Program
             e.Cancel = true;
             job!.EndRecording();
             Console.WriteLine();
-            Console.WriteLine($"Job aborted by '{e.SpecialKey}'...");
-            Console.WriteLine(job);
-            Environment.Exit(0);
             return;
         };
 
@@ -138,7 +137,7 @@ internal class Program
 
         job.StartRecording();
         if (nicePrint) { Console.SetCursorPosition(posLeft, posTop); }
-        Console.Write("Recording - press Return or Ctrl+C to stop recording...    ");
+        Console.WriteLine("Recording - press Return or Ctrl+C to stop recording...    ");
         int i = 1;
         int lastKey = 0;
         do
@@ -162,11 +161,10 @@ internal class Program
             }
             if (Console.KeyAvailable) { lastKey = Console.Read(); }
             i++;
-        } while (lastKey != 13);
+        } while (lastKey != 13 && !(job.EndTime != DateTime.MaxValue));
 
         job.EndRecording();
-        Console.WriteLine();
-        Console.WriteLine(job);
+        SummarizeJob();
     }
 
     #region UI support
@@ -195,7 +193,7 @@ internal class Program
             {
                 foreach (Resource resource in resources)
                 {
-                    Console.WriteLine("  - {0}", resource);
+                    Console.WriteLine($"  - {resource}");
                 }
             }
             else
@@ -237,6 +235,17 @@ internal class Program
             }
             if (nicePrint) { DrawScreen(); }
         }
+    }
+
+    /// <summary>
+    /// Summarize job recording
+    /// </summary>
+    private static void SummarizeJob()
+    {
+        if (nicePrint || directRun) { Console.Clear(); }
+        if (nicePrint) { PrintLogo(); }
+        if (!directRun) { Console.WriteLine("--------------------------------------------------------------------"); }
+        if (job != null) { Console.WriteLine(job); }
     }
 
     /// <summary>
@@ -327,9 +336,13 @@ Options:
                                    each resource separator before the cost value. 
                                    (e. g. for 3 resources: ""24,99;Manager:89;11"")
                                    You are allowed to use common interval types to specify costs  
-                                   scoped not only to hourly bases (e. g. MD = man days, d = days).
-  -c, --cost-types                 Lists all available cost interval types.
-  -d, --direct-run                 Starts the job immediately when resources are available.
+                                   scoped not only to hourly bases (e. g. MD = man days, d = days). 
+                                   **BE AWARE** If the resources have been processed successfully and 
+                                   you have at least one resource defined, the job will start immediately 
+                                   in full-screen mode with centered output!
+  -c, --cost-types                 Lists all available cost interval types and a few sample resource strings.
+  -d, --disable-direct-run         Prevent immediately jobe execution, even if resources are configured
+                                   to have the opportunity to add more resources in interactive mode.
   -n, --nice                       Enables a more interactive and nice looking user experience.
   -?, -h, --help                   Show help and usage information.
 ";
