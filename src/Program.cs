@@ -15,6 +15,7 @@ internal class Program
     private static int redraws = 0;
     private static readonly List<Resource> resources = [];
     private static Job? job;
+    private static string? jobName;
 
     /// <summary>
     /// Main method that processes the arguments and executes the most important application methods in the correct order
@@ -30,6 +31,10 @@ internal class Program
                 {
                     switch (args[i].Trim().ToLower())
                     {
+                        case "-j":
+                        case "--job-name":
+                            jobName = args[i + 1];
+                            break;
                         case "-r":
                         case "--resources":
                             ReadResources(args[i + 1]);
@@ -129,6 +134,7 @@ internal class Program
         var posLeft = Console.CursorLeft;
 
         job = new Job([.. resources]);
+        job.Name = string.IsNullOrWhiteSpace(jobName) ? $"Job_{DateTime.Now:yyMMdd_HHmmss}" : jobName;
         if (!directRun)
         {
             Console.Write("Press Return to start or Ctrl+C to abort...");
@@ -330,6 +336,7 @@ Usage:
   MoneyBurned.Cli [options]
 
 Options:
+  -n <name>, --job-name <name>     Give it a descriptive name if you wish - it's just for convenience.
   -r <resource string>,            Starts the tool including a set of resources, given as string. 
   --resources <resource string>    A resource string is separated by a semicolon or plus sign for 
                                    cost. If you need to assign names, use a colon as an additional 
