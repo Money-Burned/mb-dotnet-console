@@ -13,4 +13,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Fonts\colossal.flf" />
+    <EmbeddedResource Include="Fonts\small.flf" />
+  </ItemGroup>
+
 </Project>
