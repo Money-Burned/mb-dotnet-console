@@ -98,11 +98,11 @@ internal class Program
                     string[] resource = resourceStringArray[i].Split(":", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                     if (resource.Length == 2)
                     {
-                        resources.Add(new Resource(resource[0], new Cost(resource[1])));
+                        resources.Add(new Resource(resource[0], new Cost(resource[1]), true, ResourceCategory.Person));
                     }
                     else
                     {
-                        resources.Add(new Resource("Generic", new Cost(resource[0])));
+                        resources.Add(new Resource("Generic", new Cost(resource[0]), true, ResourceCategory.Person));
                     }
                 }
             }
@@ -140,7 +140,7 @@ internal class Program
         job.Name = string.IsNullOrWhiteSpace(jobName) ? $"Job_{DateTime.Now:yyMMdd_HHmmss}" : jobName;
         if (!directRun)
         {
-            fancyFont = new AsciiText(2, 0);
+            fancyFont = new AsciiText(1, 0);
             Console.Write("Press Return to start or Ctrl+C to abort...");
             Console.Read();
         }
@@ -166,9 +166,9 @@ internal class Program
             {
                 char pm = (char)177;
                 Console.SetCursorPosition(posLeft, posTop + 1);
-                if (i % 2 == 0) { fancyFont.TextInput = $" + {job.ElapsedCost:C2}"; }
-                else { fancyFont.TextInput = $" {pm} {job.ElapsedCost:C2}"; }
-                Console.WriteLine($"{fancyFont}");
+                if (i % 2 == 0) { fancyFont.TextInput = $" + {job.ElapsedCost:C2}   "; }
+                else { fancyFont.TextInput = $" {pm} {job.ElapsedCost:C2}   "; }
+                Console.WriteLine($"{fancyFont}      ");
                 Thread.Sleep(500);
             }
             else
