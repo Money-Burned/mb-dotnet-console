@@ -140,7 +140,7 @@ internal class Program
         job.Name = string.IsNullOrWhiteSpace(jobName) ? $"Job_{DateTime.Now:yyMMdd_HHmmss}" : jobName;
         if (!directRun)
         {
-            fancyFont = new AsciiText(1, 0);
+            fancyFont = new AsciiText(2, 0);
             Console.Write("Press Return to start or Ctrl+C to abort...");
             Console.Read();
         }

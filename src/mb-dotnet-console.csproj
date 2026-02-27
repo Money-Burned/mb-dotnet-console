@@ -16,6 +16,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Fonts\colossal.flf" />
     <EmbeddedResource Include="Fonts\small.flf" />
+    <EmbeddedResource Include="Fonts\standard.flf" />
   </ItemGroup>
 
 </Project>
