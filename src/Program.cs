@@ -347,7 +347,7 @@ Usage:
   MoneyBurned.Cli [options]
 
 Options:
-  -n <name>, --job-name <name>     Give it a descriptive name if you wish - it's just for convenience.
+  -j <name>, --job-name <name>     Give it a descriptive name if you wish - it's just for convenience.
   -r <resource string>,            Starts the tool including a set of resources, given as string. 
   --resources <resource string>    A resource string is separated by a semicolon or plus sign for 
                                    cost. If you need to assign names, use a colon as an additional 
