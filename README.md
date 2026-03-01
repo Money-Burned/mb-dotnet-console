@@ -4,7 +4,8 @@ This repository is one of several reference implementations of the "Money Burned
 
 This [.NET](https://dotnet.microsoft.com/en-us/learn/dotnet/what-is-dotnet) (pronounced "Dotnet") based console application is intended to be cross-platform designed and shows how to implement the [requirements](https://github.com/Money-Burned/.github/blob/main/doc/requirements.md) with a very basic user interface at command prompt level.  
 
-![A window showing the PowerShell CLI with the output of an execution of the console app, calculated for three resources a cost of €7.80](./res/mb-dotnet-console_nice.jpg)  
+![A window showing a PowerShell on the left side pane and a Ubuntu Bash on the right side pane, running Money Burned CLI in full screen mode (direct run) with two resources for 16 and 13 seconds.](./res/mb-dotnet-console_fullscreen.gif)  
+Running Money Burned CLI in PowerShell and Bash side by side in full screen mode, using two sample resources passed by parameter `-r` and a resource string.  
 
 ## Quick facts
 
@@ -58,10 +59,16 @@ For information about the development process of this appliacation please refer 
 To run the application please use `dotnet run [-- options]` or, if using the executable, you can use `MoneyBurned.Cli [options]`.
 
 **Options**  
+- `-j <name>`, `--job-name <name>`     
+    - Give it a descriptive name if you wish
 - `-r <resource string>`; `--resources <resource string>`
     - Starts the tool including a set of pre-defined resources, given as string
     - A resource string is separated by a semicolon or plus sign for  cost. If you need to assign names, use a colon as an additional each resource separator before the cost value. (e. g. for 3 resources: _"24,99;Manager:89;11"_)
     - You are allowed to use common interval types to specify costs  scoped not only to hourly bases (e. g. MD = man days, d = days)
+    - If the resources have been processed successfully and you have at least one resource defined, the job will start immediately in full-screen mode with centered output
+    - If you want to run in interactive mode, use the `-d` parameter
+- `-d`, `--disable-direct-run`
+    - Prevent immediate job execution to have the opportunity to add more resources in interactive mode, even if resources already are configured 
 - `-c`; `--cost-types`                 
     - Lists all available cost interval types
 - `-n`; `--nice` 
