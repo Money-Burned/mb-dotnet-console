@@ -359,8 +359,8 @@ Options:
                                    you have at least one resource defined, the job will start immediately 
                                    in full-screen mode with centered output!
   -c, --cost-types                 Lists all available cost interval types and a few sample resource strings.
-  -d, --disable-direct-run         Prevent immediately jobe execution, even if resources are configured
-                                   to have the opportunity to add more resources in interactive mode.
+  -d, --disable-direct-run         Prevent immediate job execution to have the opportunity to add more 
+                                   resources in interactive mode, even if resources already are configured.
   -n, --nice                       Enables a more interactive and nice looking user experience.
   -?, -h, --help                   Show help and usage information.
 ";
