@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using MoneyBurned.Dotnet.Lib;
 using MoneyBurned.Dotnet.Lib.Data;
+using TRoschinsky.Common;
 
 namespace MoneyBurned.Dotnet.Cli;
 
@@ -69,9 +70,10 @@ internal class Program
             }
             RunJob();
         }
-        catch (IndexOutOfRangeException)
+        catch (IndexOutOfRangeException ex)
         {
-            Console.WriteLine("Something seems to be wrong with your command line parameters. Please check carefully.");
+            Console.WriteLine("Something seems to be wrong with your command line parameters. Please check carefully: {0}", ex.Message);
+            Environment.Exit(2);
         }
         catch (Exception ex)
         {
@@ -96,11 +98,11 @@ internal class Program
                     string[] resource = resourceStringArray[i].Split(":", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                     if (resource.Length == 2)
                     {
-                        resources.Add(new Resource(resource[0], new Cost(resource[1])));
+                        resources.Add(new Resource(resource[0], new Cost(resource[1]), true, ResourceCategory.Person));
                     }
                     else
                     {
-                        resources.Add(new Resource("Generic", new Cost(resource[0])));
+                        resources.Add(new Resource("Generic", new Cost(resource[0]), true, ResourceCategory.Person));
                     }
                 }
             }
@@ -132,13 +134,19 @@ internal class Program
 
         var posTop = Console.CursorTop;
         var posLeft = Console.CursorLeft;
+        AsciiText fancyFont;
 
         job = new Job([.. resources]);
         job.Name = string.IsNullOrWhiteSpace(jobName) ? $"Job_{DateTime.Now:yyMMdd_HHmmss}" : jobName;
         if (!directRun)
         {
+            fancyFont = new AsciiText(1, 0);
             Console.Write("Press Return to start or Ctrl+C to abort...");
             Console.Read();
+        }
+        else
+        {
+            fancyFont = new AsciiText();
         }
 
         job.StartRecording();
@@ -150,14 +158,17 @@ internal class Program
         {
             if (directRun)
             {
-                CenterText($"{job.ElapsedCost:C2}");
+                fancyFont.TextInput = $"{job.ElapsedCost:C2}";
+                CenterText($"{fancyFont}");
                 Thread.Sleep(1000);
             }
             else if (nicePrint)
             {
+                char pm = (char)177;
                 Console.SetCursorPosition(posLeft, posTop + 1);
-                if (i % 2 == 0) { Console.Write("  [/] {0:C2}", job.ElapsedCost); }
-                else { Console.Write("  [\\] {0:C2}", job.ElapsedCost); }
+                if (i % 2 == 0) { fancyFont.TextInput = $" + {job.ElapsedCost:C2}   "; }
+                else { fancyFont.TextInput = $" {pm} {job.ElapsedCost:C2}   "; }
+                Console.WriteLine($"{fancyFont}      ");
                 Thread.Sleep(500);
             }
             else
@@ -336,7 +347,7 @@ Usage:
   MoneyBurned.Cli [options]
 
 Options:
-  -n <name>, --job-name <name>     Give it a descriptive name if you wish - it's just for convenience.
+  -j <name>, --job-name <name>     Give it a descriptive name if you wish - it's just for convenience.
   -r <resource string>,            Starts the tool including a set of resources, given as string. 
   --resources <resource string>    A resource string is separated by a semicolon or plus sign for 
                                    cost. If you need to assign names, use a colon as an additional 
