@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using MoneyBurned.Dotnet.Lib;
 using MoneyBurned.Dotnet.Lib.Data;
+using TRoschinsky.Common;
 
 namespace MoneyBurned.Dotnet.Cli;
 
@@ -11,9 +12,11 @@ internal class Program
 {
     private static bool resComplete = false;
     private static bool nicePrint = false;
+    private static bool directRun = false;
     private static int redraws = 0;
     private static readonly List<Resource> resources = [];
     private static Job? job;
+    private static string? jobName;
 
     /// <summary>
     /// Main method that processes the arguments and executes the most important application methods in the correct order
@@ -29,6 +32,10 @@ internal class Program
                 {
                     switch (args[i].Trim().ToLower())
                     {
+                        case "-j":
+                        case "--job-name":
+                            jobName = args[i + 1];
+                            break;
                         case "-r":
                         case "--resources":
                             ReadResources(args[i + 1]);
@@ -37,7 +44,10 @@ internal class Program
                         case "--nice":
                             nicePrint = true;
                             break;
-                        
+                        case "-d":
+                        case "--disable-direct-run":
+                            directRun = true;
+                            break;
                         case "-c":
                         case "--cost-types":
                             PrintCostTypes();
@@ -49,14 +59,21 @@ internal class Program
                             break;
                     }
                 }
+
+                // if resources are added already, switch to direct mode, except 'disable-direct-run' was selected
+                if (resources.Count > 0) { directRun = !directRun; }
             }
 
-            DrawScreen();
+            if (!directRun)
+            {
+                DrawScreen();
+            }
             RunJob();
         }
-        catch (IndexOutOfRangeException)
+        catch (IndexOutOfRangeException ex)
         {
-            Console.WriteLine("Something seems to be wrong with your command line parameters. Please check carefully.");
+            Console.WriteLine("Something seems to be wrong with your command line parameters. Please check carefully: {0}", ex.Message);
+            Environment.Exit(2);
         }
         catch (Exception ex)
         {
@@ -81,11 +98,11 @@ internal class Program
                     string[] resource = resourceStringArray[i].Split(":", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                     if (resource.Length == 2)
                     {
-                        resources.Add(new Resource(resource[0], new Cost(resource[1])));
+                        resources.Add(new Resource(resource[0], new Cost(resource[1]), true, ResourceCategory.Person));
                     }
                     else
                     {
-                        resources.Add(new Resource("Generic", new Cost(resource[0])));
+                        resources.Add(new Resource("Generic", new Cost(resource[0]), true, ResourceCategory.Person));
                     }
                 }
             }
@@ -107,25 +124,51 @@ internal class Program
             return;
         }
 
+        Console.CancelKeyPress += (sender, e) =>
+        {
+            e.Cancel = true;
+            job!.EndRecording();
+            Console.WriteLine();
+            return;
+        };
+
         var posTop = Console.CursorTop;
         var posLeft = Console.CursorLeft;
+        AsciiText fancyFont;
 
         job = new Job([.. resources]);
-        Console.Write("Press Return to start or Ctrl+C to abort...");
-        Console.Read();
+        job.Name = string.IsNullOrWhiteSpace(jobName) ? $"Job_{DateTime.Now:yyMMdd_HHmmss}" : jobName;
+        if (!directRun)
+        {
+            fancyFont = new AsciiText(1, 0);
+            Console.Write("Press Return to start or Ctrl+C to abort...");
+            Console.Read();
+        }
+        else
+        {
+            fancyFont = new AsciiText();
+        }
 
         job.StartRecording();
         if (nicePrint) { Console.SetCursorPosition(posLeft, posTop); }
-        Console.Write("Recording - press Return to stop recording...    ");
+        Console.WriteLine("Recording - press Return or Ctrl+C to stop recording...    ");
         int i = 1;
         int lastKey = 0;
         do
         {
-            if (nicePrint)
+            if (directRun)
             {
+                fancyFont.TextInput = $"{job.ElapsedCost:C2}";
+                CenterText($"{fancyFont}");
+                Thread.Sleep(1000);
+            }
+            else if (nicePrint)
+            {
+                char pm = (char)177;
                 Console.SetCursorPosition(posLeft, posTop + 1);
-                if (i % 2 == 0) { Console.Write("  [/] {0:C2}", job.ElapsedCost); }
-                else { Console.Write("  [\\] {0:C2}", job.ElapsedCost); }
+                if (i % 2 == 0) { fancyFont.TextInput = $" + {job.ElapsedCost:C2}   "; }
+                else { fancyFont.TextInput = $" {pm} {job.ElapsedCost:C2}   "; }
+                Console.WriteLine($"{fancyFont}      ");
                 Thread.Sleep(500);
             }
             else
@@ -135,11 +178,11 @@ internal class Program
             }
             if (Console.KeyAvailable) { lastKey = Console.Read(); }
             i++;
-        } while (lastKey != 13);
+        } while (lastKey != 13 && !(job.EndTime != DateTime.MaxValue));
 
         job.EndRecording();
-        Console.WriteLine();
-        Console.WriteLine(job);
+        SummarizeJob();
+        Environment.Exit(0);
     }
 
     #region UI support
@@ -168,7 +211,7 @@ internal class Program
             {
                 foreach (Resource resource in resources)
                 {
-                    Console.WriteLine("  - {0}", resource);
+                    Console.WriteLine($"  - {resource}");
                 }
             }
             else
@@ -213,6 +256,68 @@ internal class Program
     }
 
     /// <summary>
+    /// Summarize job recording
+    /// </summary>
+    private static void SummarizeJob()
+    {
+        if (nicePrint || directRun) { Console.Clear(); }
+        if (nicePrint) { PrintLogo(); }
+        if (!directRun) { Console.WriteLine("--------------------------------------------------------------------"); }
+        if (job != null) { Console.WriteLine(job); }
+    }
+
+    /// <summary>
+    /// Prints full screen centered text to console
+    /// </summary>
+    /// <param name="centerText">Text to display; can be multiple lines</param>
+    /// <param name="leftOffset">Left offset</param>
+    /// <param name="topOffset">Top offset</param>
+    private static void CenterText(string centerText, int leftOffset = 0, int topOffset = 0)
+    {
+        if (string.IsNullOrEmpty(centerText))
+        {
+            return;
+        }
+
+        int middleWidth;
+        int middleHeight;
+
+        try
+        {
+            centerText = centerText.ReplaceLineEndings();
+            string[] lines = centerText.Split([Environment.NewLine], StringSplitOptions.None);
+            int horizontalMiddle = 0;
+            foreach (string line in lines)
+            {
+                horizontalMiddle = line.Length > horizontalMiddle ? Convert.ToInt32(line.Length / 2) : horizontalMiddle;
+            }
+
+            middleWidth = Convert.ToInt32(Console.WindowWidth / 2) - horizontalMiddle + leftOffset;
+            middleHeight = Convert.ToInt32(Console.WindowHeight / 2) + topOffset - Convert.ToInt32(lines.Length / 2);
+            Console.Clear();
+            for (int i = 0; i < lines.Length; i++)
+            {
+                Console.SetCursorPosition(middleWidth, middleHeight);
+                Console.Write(lines[i]);
+                middleHeight++;
+            }
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            middleWidth = Convert.ToInt32(Console.WindowWidth / 2) - 13;
+            middleHeight = Convert.ToInt32(Console.WindowHeight / 2) - 1;
+            Console.SetCursorPosition(middleWidth, middleHeight);
+            Console.Write("# !Output Area to small! #");
+            Console.SetCursorPosition(middleWidth, middleHeight + 1);
+            Console.Write("# Please enlarge console #");
+        }
+        catch (Exception ex)
+        {
+            Console.Write($"Writing output failed with {ex.GetType().Name}: {ex.Message}");
+        }
+    }
+
+    /// <summary>
     /// Prints the applications logo
     /// </summary>
     private static void PrintLogo()
@@ -243,14 +348,20 @@ Usage:
   MoneyBurned.Cli [options]
 
 Options:
+  -j <name>, --job-name <name>     Give it a descriptive name if you wish - it's just for convenience.
   -r <resource string>,            Starts the tool including a set of resources, given as string. 
   --resources <resource string>    A resource string is separated by a semicolon or plus sign for 
                                    cost. If you need to assign names, use a colon as an additional 
                                    each resource separator before the cost value. 
                                    (e. g. for 3 resources: ""24,99;Manager:89;11"")
                                    You are allowed to use common interval types to specify costs  
-                                   scoped not only to hourly bases (e. g. MD = man days, d = days).
-  -c, --cost-types                 Lists all available cost interval types.
+                                   scoped not only to hourly bases (e. g. MD = man days, d = days). 
+                                   **BE AWARE** If the resources have been processed successfully and 
+                                   you have at least one resource defined, the job will start immediately 
+                                   in full-screen mode with centered output!
+  -c, --cost-types                 Lists all available cost interval types and a few sample resource strings.
+  -d, --disable-direct-run         Prevent immediate job execution to have the opportunity to add more 
+                                   resources in interactive mode, even if resources already are configured.
   -n, --nice                       Enables a more interactive and nice looking user experience.
   -?, -h, --help                   Show help and usage information.
 ";
