@@ -182,6 +182,7 @@ internal class Program
 
         job.EndRecording();
         SummarizeJob();
+        Environment.Exit(0);
     }
 
     #region UI support
