@@ -38,7 +38,7 @@ internal class Program
                             break;
                         case "-r":
                         case "--resources":
-                            ReadResources(args[i + 1]);
+                            if(Resource.TryReadResources(args[i + 1], out List<Resource> res)) { resources.AddRange(res); }
                             break;
                         case "-n":
                         case "--nice":
@@ -79,37 +79,6 @@ internal class Program
         {
             Console.WriteLine("Whoops, something went not as expected: {0}.", ex.Message);
             Environment.Exit(1);
-        }
-    }
-
-    /// <summary>
-    /// Parser for a string based list of resources, that will be added as resources for processing
-    /// </summary>
-    /// <param name="resourceString"></param>
-    private static void ReadResources(string resourceString)
-    {
-        try
-        {
-            string[] resourceStringArray = resourceString.Split([';', '+'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            if (resourceStringArray != null && resourceStringArray.Length > 0)
-            {
-                for (int i = 0; i < resourceStringArray.Length; i++)
-                {
-                    string[] resource = resourceStringArray[i].Split(":", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                    if (resource.Length == 2)
-                    {
-                        resources.Add(new Resource(resource[0], new Cost(resource[1]), true, ResourceCategory.Person));
-                    }
-                    else
-                    {
-                        resources.Add(new Resource("Generic", new Cost(resource[0]), true, ResourceCategory.Person));
-                    }
-                }
-            }
-        }
-        catch (System.Exception ex)
-        {
-            Console.WriteLine("Resources from command line input are not valid because of {0}. Good bye.", ex.Message);
         }
     }
 

@@ -156,12 +156,6 @@ public class AsciiFont
         {
             for (int fontDefLineIndex = startAt; fontDefLineIndex < fontDefLines.Length; fontDefLineIndex++)
             {
-                
-if(currentChar == 128)
-{
-    System.Threading.Thread.Sleep(3);
-}
-
                 if (CheckForSpecialChar(fontDefLines[fontDefLineIndex], endToken, out var specialChar))
                 {
                     currentChar = specialChar;
